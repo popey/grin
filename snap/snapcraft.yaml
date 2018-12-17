@@ -1,0 +1,46 @@
+name: grin
+base: core18 # the base snap is the execution environment for this snap
+adopt-info: grin
+summary: Minimal implementation of the MimbleWimble protocol
+description: |
+  Grin is an in-progress implementation of the MimbleWimble protocol. 
+  Many characteristics are still undefined but the following constitutes a first set of choices:
+    Clean and minimal implementation, aiming to stay as such.
+    Follows the MimbleWimble protocol, which provides great anonymity and scaling characteristics.
+    Cuckoo Cycle proof of work.
+    Relatively fast block time (a minute).
+    Fixed block reward over time with a decreasing dilution.
+    Transaction fees are based on the number of Outputs created/destroyed and total transaction size.
+    Smooth curve for difficulty adjustments.
+
+grade: stable
+confinement: strict
+
+parts:
+  grin:
+    plugin: rust
+    source: .
+    build-packages:
+      - build-essential
+      - cmake
+      - git
+      - libgit2-dev
+      - clang
+      - libncurses5-dev
+      - libncursesw5-dev
+      - zlib1g-dev
+      - pkg-config
+      - libssl-dev
+      - llvm
+    override-build: |
+      snapcraftctl build
+      snapcraftctl set-version $(git describe --tags)
+
+apps:
+  grin:
+    command: bin/grin
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media
